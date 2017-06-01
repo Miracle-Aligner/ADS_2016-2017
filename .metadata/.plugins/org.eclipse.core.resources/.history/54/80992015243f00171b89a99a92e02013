@@ -1,0 +1,4 @@
+final class DefineConstants
+{
+	public static final int MATRIX_SIZE = 6;
+}

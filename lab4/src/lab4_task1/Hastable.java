@@ -1,0 +1,220 @@
+package lab4_task1;
+
+import common.FigureSet;
+import common.GeomFigure;
+
+/**
+ * 
+ * This class implements a set as a hash table. Hash table is an associative
+ * array of entries. <br>
+ * Each entry contains geometric figure or null. <br>
+ * Hash table does not resolve any collisions
+ *
+ */
+public class Hastable implements FigureSet {
+
+	private GeomFigure[] table;
+
+	/**
+	 * the number of non-null entries in the hashtable
+	 */
+	private int size;
+
+	/**
+	 * default size of the hashtable
+	 */
+	private final int initialCapacity = 11;
+
+	/**
+	 * The load factor is a measure of how full the hash table is allowed to get
+	 * / before its capacity is automatically increased
+	 */
+	private double loadFactor = 0.75;
+
+	/**
+	 * Constructs a new, empty hashtable with a default initial capacity (11)
+	 * and load factor (0.75).
+	 */
+	public Hastable() {
+
+		// TODO
+		// create an array of size equals to default initialCapacity
+		this.table = new GeomFigure [initialCapacity];
+		this.size = 0;		
+	}
+
+	/**
+	 * Constructs a new, empty hashtable with the specified initial capacity and
+	 * default load factor (0.75).
+	 * 
+	 * @param initialCapacity
+	 *            the initial capacity of the hashtable
+	 */
+	public Hastable(int initialCapacity) {
+
+		// TODO
+		// create an array of size equals to initialCapacity
+		this.table = new GeomFigure [initialCapacity];
+		this.size = 0;
+	}
+
+	/**
+	 * Constructs a new, empty hashtable with the specified initial capacity and
+	 * the specified load factor.
+	 * 
+	 * @param initialCapacity
+	 *            the initial capacity of the hashtable
+	 * @param loadFactor
+	 *            the load factor of the hashtable
+	 */
+	public Hastable(int initialCapacity, double loadFactor) {
+
+		// TODO create an array of size equals to initialCapacity
+		// TODO initialize field loadFactor
+		this.table = new GeomFigure [initialCapacity];
+		this.loadFactor = loadFactor;
+		this.size = 0;
+	}
+
+	/**
+	 * Returns the number of entries in the hashtable
+	 * 
+	 * @return the number of entries in the hashtable
+	 */
+	public int size() {
+		return size;
+	}
+
+	/**
+	 * Increases the capacity of and internally reorganizes this hashtable, in
+	 * order to accommodate and access its entries more efficiently. This method
+	 * is called when the number of elements in the hashtable exceeds this
+	 * hashtable's capacity and load factor
+	 */
+	private void rehash() {
+		GeomFigure [] table = this.table;
+		int arrayCurrentSize = this.table.length;
+		this.size = 0;
+		this.table = new GeomFigure [arrayCurrentSize * 2];
+		
+		for (int i = 0; i < arrayCurrentSize; i++)
+		{
+			GeomFigure tmp;
+			tmp = table[i];
+			if (tmp != null) {
+				this.add(tmp);
+			}
+		}
+	}
+
+	/**
+	 * The hash function is used to calculate the hashvalue of the object gf.
+	 * Choose hashing method from your variant (table 1): deletion or
+	 * multiplication
+	 * 
+	 * @param gf
+	 *            some geometric figure
+	 * @return hash value - index in table
+	 */
+	private int hash(GeomFigure gf) {
+		// TODO
+		return gf.hashCode() % this.table.length;
+	}
+
+	@Override
+	public boolean add(GeomFigure gf) {
+		// TODO
+		// if gf is not null
+		// ---calculate number of slot where should be object gf
+		// ------if slot is empty
+		// ----------write gf to the slot and rehash if need
+		// ----------increase the size of hash table
+		if (gf != null)
+		{
+			int figHash = hash(gf);
+			if (this.table[figHash] == null)
+			{
+				this.table[figHash] = gf;
+				this.size++;
+				if ((this.size() / this.table.length) >= this.loadFactor)
+				{
+					rehash();
+				}
+					
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean contains(GeomFigure gf) {
+		// TODO
+		// if gf is not null
+		// ----Calculate hashvalue of gf
+		// ------if slot is not empty
+		// ---------compare gf and object from the slot
+		if (gf != null)
+		{
+			int figHash = hash(gf);
+			if (this.table[figHash] != null)
+			{
+				return this.table[figHash].equals(gf);
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean remove(GeomFigure gf) {
+		// TODO
+		// if gf is not null, return false
+		// ---Calculate number of slot where should be object gf
+		// ---if slot is not empty
+		// -------write null into the slot
+		// -------decrease the size of hash table
+		// -------return true
+		if (gf != null)
+		{
+			int figHash = hash(gf);
+			if (gf.equals(this.table[figHash]))
+			{
+				this.table[figHash] = null;
+				this.size--;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// check the size of hashtable
+		return size == 0;
+	}
+
+	@Override
+	public void print() {
+		// TODO
+		// Output the table , where each row contains a number of the hash-table
+		// slot, and the element itself.For example,
+		// If a slot is empty the row contains a number of the hash-table slot
+		// and the message “The slot is empty”.
+
+		System.out.println(String.format("   Slot   |   Hashcode   |   Vertex 1   |   Vertex 2   |   Vertex 3   |  Angle   |"));
+		int arrSize = this.table.length;
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (this.table[i] != null)
+				System.out.println(String.format("    %-6s|%s", i, this.table[i].toString()));
+			else 
+				System.out.println(String.format("    %-6s|     The      |     slot     |      is      |    empty.    |          |", i));
+		}
+
+
+	}
+	
+	
+}

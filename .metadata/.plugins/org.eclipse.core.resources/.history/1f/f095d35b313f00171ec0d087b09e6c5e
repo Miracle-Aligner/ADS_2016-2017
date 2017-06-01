@@ -1,0 +1,29 @@
+package little.tangible;
+
+//----------------------------------------------------------------------------------------
+//	Copyright © 2006 - 2017 Tangible Software Solutions Inc.
+//	This class can be used by anyone provided that the copyright notice remains intact.
+//
+//	This class provides the ability to initialize and delete array elements.
+//----------------------------------------------------------------------------------------
+public final class Arrays
+{
+	public static Zero[] initializeWithDefaultZeroInstances(int length)
+	{
+		Zero[] array = new Zero[length];
+		for (int i = 0; i < length; i++)
+		{
+			array[i] = new Zero();
+		}
+		return array;
+	}
+
+	public static <T extends java.io.Closeable> void deleteArray(T[] array)
+	{
+		for (T element : array)
+		{
+			if (element != null)
+				element.close();
+		}
+	}
+}

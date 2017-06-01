@@ -1,0 +1,42 @@
+package bst;
+
+import java.io.File;
+
+public class Task1Main {
+	// name of file which stores data about students
+	private static String fileName = "students.csv";
+
+	// path to the current directory that contains directory "data"
+	private static String currenDir = System.getProperty("user.dir")
+			+ File.separatorChar + "data";
+
+	public static void main(String[] args) {
+		// create object of class StudentReader and invoke method read
+		// TODO
+
+		StudentDictionary<Student> dict = new BSTree<>();
+
+		// TEST dict.put
+		// fill dictionary:insert students to the dictionary
+		// TODO
+
+		// TEST dict.print dictionary
+		// output the content of a dictionary
+		// TODO
+
+		// TEST dict.put
+		// insert students with non-unique key
+		// TODO
+
+		// TEST: dict.contains
+		// TODO
+
+		// TEST: dict.get
+		// TODO
+
+		// TEST: dict.remove
+		// TODO
+
+	}
+
+}

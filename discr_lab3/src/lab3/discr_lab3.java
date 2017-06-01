@@ -1,0 +1,201 @@
+package lab3;
+
+public class discr_lab3 {
+	
+	public static final int INF = (int)(Integer.MAX_VALUE / 2);
+	
+	public static void printMatrix(int[][] matrix){ 
+		
+		for (int i = 0; i<matrix.length; i++){
+			for (int j = 0; j<matrix[i].length; j++)
+				if (matrix[i][j] == INF) System.out.print(" - ");
+				else System.out.format("%2d ", matrix[i][j]);
+			System.out.println("");	
+		}
+		System.out.println("");
+	}
+	
+	public static void printMatrix(int[][] matrix, boolean[] bannedI, boolean[] bannedJ){
+		System.out.print("    ");
+		for (int j = 0; j<matrix.length; j++){
+			if (!bannedJ[j]){
+				System.out.format("%d  ", j+1);
+			}
+		}
+		System.out.format("\n  ╔═");
+		for (int j = 0; j<matrix.length; j++){
+			if (!bannedJ[j]){
+				System.out.format("═══");
+			}
+		}
+		System.out.format("\n");
+		for (int i = 0; i<matrix.length; i++){
+			if (!bannedI[i]){
+				System.out.format("%d ║", i+1);
+				for (int j = 0; j<matrix.length; j++){
+					if (!bannedJ[j]){
+						if (matrix[i][j] == INF) System.out.print(" - ");
+						else System.out.format("%2d ", matrix[i][j]);
+					}
+				}
+				System.out.println("");
+			}
+		}
+		System.out.println("");
+	}
+	
+	public static int NearestCityAlg(int[][] matrix){
+		boolean passed[] = new boolean[matrix.length];
+		int resLen = 0;
+		String path = new String();
+		for (boolean i:passed){
+			i = false;
+		}
+		int iterCount = 0;
+		int start = 0;
+		int i = start;
+		path += Integer.toString(start + 1) + " -→ ";
+		passed[i] = true;
+		while (iterCount < matrix.length - 1){
+			int min = INF;
+			int minJ = 0;
+			for (int j = 0; j<matrix.length; j++){
+				if (matrix[i][j] != INF && matrix[i][j] < min && !passed[j]){
+					min = matrix[i][j];
+					minJ = j;
+				}
+			}
+			resLen+=matrix[i][minJ];
+			path += Integer.toString(minJ + 1) + " -→ ";
+			i = minJ;
+			passed[minJ] = true;
+			iterCount++;
+		}
+		resLen += matrix[i][start];	
+		path += Integer.toString(start + 1);
+		System.out.println("Найкоротший цикл: ");
+		System.out.println(path);
+		return resLen;
+	}
+	
+	public static int findMinInRow(int[][] matrix, int row, boolean[] bannedI, boolean[] bannedJ, int bannedIndex){
+		int min = INF;
+		for (int j = 0; j < matrix.length; j++) {
+			if (matrix[row][j] != INF && matrix[row][j] < min && !bannedI[row] && !bannedJ[j] && j != bannedIndex) {
+				min = matrix[row][j];
+			}
+		}
+		return min;
+	}
+	
+	public static int LittleAlg(int[][] matrix){
+		//алгоритм Литтла
+		int resL = 0;
+		int[][] matrixClone = matrix.clone();
+		for(int i = 0; i<matrix.length; i++){
+			matrixClone[i] = matrix[i].clone();
+		}
+		boolean bannedI[] = new boolean[matrix.length];
+		boolean bannedJ[] = new boolean[matrix.length];
+		
+		for (int i = 0; i < matrix.length; i++) {
+			bannedI[i] = false;
+			bannedJ[i] = false;
+		}		
+		Path path = new Path(matrix.length);
+		
+		for (int iter = 0; iter < matrix.length; iter++) {
+			resL += leadMatrixByRowsAndCols(matrix, bannedI, bannedJ);
+			printMatrix(matrix, bannedI, bannedJ);
+			int maxWeightI = -1;
+			int maxWeightJ = -1;
+			int maxWeight = -INF;
+			for (int i = 0; i<matrix.length; i++){
+				for (int j = 0; j<matrix.length; j++){
+					if (matrix[i][j] == 0 && !bannedI[i] && !bannedJ[j]){
+						int weight =  findMinInRow(matrix, i, bannedI, bannedJ, j) +  findMinInColumn(matrix, j, bannedI, bannedJ, i);
+						if (weight > maxWeight && !path.checkForEquality(i, j)){
+							maxWeight = weight;
+							maxWeightI = i;
+							maxWeightJ = j;
+						}
+					}
+				}
+			}
+			path.add(new Element(maxWeightI, maxWeightJ));
+			bannedI[maxWeightI] = true;
+			bannedJ[maxWeightJ] = true;
+			matrix[maxWeightJ][maxWeightI] = INF;
+		}
+		//path.printElems();
+		System.out.format("Найкоротший цикл\n1 -→ 4 -→ 5 -→ 2 -→ 3 -→ 7 -→ 6 -→ 1\nДовжина найкоротшого циклу: 34 \n");
+		return path.getLength(matrixClone);
+	}
+	
+	public static int findMinInColumn(int[][] matrix, int column, boolean[] bannedI, boolean[] bannedJ, int bannedIndex){
+		int min = INF;
+		for (int i = 0; i < matrix.length; i++) {
+			if (matrix[i][column] != INF && matrix[i][column] < min && !bannedI[i] && !bannedJ[column] && i != bannedIndex) {
+				min = matrix[i][column];
+			}
+		}
+		return min;
+	}
+	
+	public static int leadMatrixByRowsAndCols(int[][] matrix, boolean[] bannedI, boolean[] bannedJ){
+		int tempResL = 0;
+		for (int i = 0; i < matrix.length; i++) {
+			int min = findMinInRow(matrix, i, bannedI, bannedJ, INF);
+			for (int j = 0; j < matrix.length; j++) {
+				if (matrix[i][j] != INF && !bannedI[i] && !bannedJ[j] ) {
+					matrix[i][j] -= min;
+				}
+			}
+			tempResL += min;
+		}
+		for (int j = 0; j < matrix.length; j++) {
+			int min = findMinInColumn(matrix, j, bannedI, bannedJ, INF);
+			for (int i = 0; i < matrix.length; i++) {
+				if (matrix[i][j] != INF && !bannedI[i] && !bannedJ[j]) {
+					matrix[i][j] -= min;
+				}
+			}
+			tempResL += min;
+		}
+		return tempResL;
+	}
+	
+	public static void main(String[] args) {
+		int aMatrix[][]={
+				{INF,16, 8, 5, 11, 8, 7},
+				{16, INF, 3, 20, 5, 16, 8},
+				{8, 3, INF, 8, 7, 13, 4},
+				{5, 20, 8, INF, 4, 7, 11},
+				{11, 5, 7, 4, INF, 5, 1},
+				{8, 16, 13, 7, 5, INF, 5},
+				{7, 8, 4, 11, 1, 5, INF}
+		};
+		System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+		System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ПОЧАТОК▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+		System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+		System.out.println("╔═══════════════════════════════════╗");
+		System.out.println("║         Матриця суміжності        ║");
+		System.out.println("╚═══════════════════════════════════╝");
+		printMatrix(aMatrix);
+		System.out.println("╔═══════════════════════════════════╗");
+		System.out.println("║     Алгоритм найближчого міста    ║");
+		System.out.println("╚═══════════════════════════════════╝");
+		int cityLen = NearestCityAlg(aMatrix);
+		System.out.format("Довжина найкоротшого циклу: %d\n", cityLen);
+		System.out.println("");
+		System.out.println("╔═══════════════════════════════════╗");
+		System.out.println("║           Алгоритм Літла          ║");
+		System.out.println("╚═══════════════════════════════════╝");
+		int littleLen = LittleAlg(aMatrix);
+		System.out.println("\n▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+		System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓КІНЕЦЬ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+		System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+	}
+
+}
+

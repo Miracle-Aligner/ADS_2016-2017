@@ -1,0 +1,32 @@
+package mainpackage;
+
+public class TestingClass {
+
+	public static void main(String[] args) {
+		final int N = 1000;
+		int[][] adjacencyMatrix = {
+				{N,5,29,8,13,10},
+				{5,N,7,11,15,9},
+				{29,7,N,9,18,11},
+				{8,11,9,N,3,17},
+				{13,15,18,3,N,6},
+				{10,9,11,17,6,N}
+		};
+		
+		GreedyAlgoHelper greedyHelper = new GreedyAlgoHelper(adjacencyMatrix);
+		
+		System.out.println("Adjacency matrix:");
+		greedyHelper.printMatrix();
+		
+		System.out.println("Doing greedy algorithm...");
+		int minLength = greedyHelper.algorithm();
+		
+		System.out.print("Path: ");
+		greedyHelper.printPath();
+		
+		System.out.print("Weight on each step: ");
+		greedyHelper.printStepsWeight();
+		
+		System.out.println("Min length by greedy algorithm: " + minLength);		
+	}	
+}

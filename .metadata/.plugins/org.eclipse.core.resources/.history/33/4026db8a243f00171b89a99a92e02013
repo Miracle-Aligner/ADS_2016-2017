@@ -1,0 +1,223 @@
+package little;
+public class GlobalMembers
+{
+	public static int Main()
+	{
+		int[][] adjacencyMatrix =
+		{
+			{0,9,11,15,8,2},
+			{9,0,4,22,13,10},
+			{11,4,0,18,15,14},
+			{15,22,18,0,7,19},
+			{8,13,15,7,0,17},
+			{2,10,14,19,17,0}
+		};
+
+		for (int i = 0; i < DefineConstants.MATRIX_SIZE; i++)
+		{
+			adjacencyMatrix[i][i] = Integer.MAX_VALUE;
+		}
+
+		print(adjacencyMatrix, DefineConstants.MATRIX_SIZE);
+
+		System.out.println("Branch and bound algorithm.");
+		int L = algorithmLittle(adjacencyMatrix, DefineConstants.MATRIX_SIZE);
+		System.out.printf("Minimal length is: %d\n", L - 1);
+
+		system("pause");
+		return 0;
+	}
+
+	public static int algorithmLittle(int[][] Matr, int n)
+	{
+		int size = n - 1;
+		int L = 0;
+
+		while (n > 2)
+		{
+			// Find minimal element by rows.
+			for (int i = 1; i < n; i++)
+			{
+				int min = Integer.MAX_VALUE;
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[i][j] < min)
+					{
+						min = Matr[i][j];
+					}
+				}
+				L += min;
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[i][j] != Integer.MAX_VALUE)
+					{
+						Matr[i][j] -= min;
+					}
+				}
+			}
+			// Counter for initialization array of Zeros.
+			int cnt = 0;
+			// Find minimal element by columns.
+			for (int i = 1; i < n; i++)
+			{
+				int min = Integer.MAX_VALUE;
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[j][i] < min)
+					{
+						min = Matr[j][i];
+					}
+				}
+				L += min;
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[j][i] != Integer.MAX_VALUE)
+					{
+						Matr[j][i] -= min;
+					}
+					if (Matr[j][i] == 0)
+					{
+						cnt++;
+					}
+				}
+			}
+			// Initialize array of zeros.
+			Zero[] aZero = tangible.Arrays.initializeWithDefaultZeroInstances(cnt);
+			// Fill this array.
+			int index = 0;
+			for (int i = 1; i < n; i++)
+			{
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[i][j] == 0)
+					{
+						aZero[index].i = i;
+						aZero[index].j = j;
+						index++;
+					}
+				}
+			}
+
+			// Calculate minimal shit another one time and do all this shit another one time.
+			for (int index = 0; index < cnt; index++)
+			{
+				int min = Integer.MAX_VALUE;
+				for (int i = 1; i < n; i++)
+				{
+					if (aZero[index].i != i && min > Matr[i][aZero[index].j])
+					{
+						min = Matr[i][aZero[index].j];
+					}
+				}
+				aZero[index].data += min;
+				min = Integer.MAX_VALUE;
+				for (int j = 1; j < n; j++)
+				{
+					if (aZero[index].j != j && min > Matr[aZero[index].i][j])
+					{
+						min = Matr[aZero[index].i][j];
+					}
+				}
+				aZero[index].data += min;
+			}
+			Zero max = aZero[0];
+			for (int i = 0; i < cnt; i++)
+			{
+				if (aZero[i].data > max.data)
+				{
+//C++ TO JAVA CONVERTER WARNING: The following line was determined to be a copy assignment (rather than a reference assignment) - this should be verified and a 'copyFrom' method should be created if it does not yet exist:
+//ORIGINAL LINE: max = aZero[i];
+					max.copyFrom(aZero[i]);
+				}
+			}
+			n--;
+
+			// Delete unnecessary shit.
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					if (j < max.j && i >= max.i)
+					{
+						Matr[i][j] = Matr[i + 1][j];
+					}
+					else if (j >= max.j)
+					{
+						if (i < max.i)
+						{
+							Matr[i][j] = Matr[i][j + 1];
+						}
+						else
+						{
+							Matr[i][j] = Matr[i + 1][j + 1];
+						}
+					}
+				}
+			}
+
+			// Reaarange data array.
+			boolean flag = false;
+			for (int i = 1; i < n; i++)
+			{
+				for (int j = 1; j < n; j++)
+				{
+					if (Matr[i][j] == Integer.MAX_VALUE)
+					{
+						break;
+					}
+					if (j == n - 1)
+					{
+						int ind = 1;
+						while (!flag)
+						{
+							for (int k = i + 1; k < n; k++)
+							{
+								if (Matr[ind][k] == Integer.MAX_VALUE)
+								{
+									break;
+								}
+								if (k == n - 1)
+								{
+									Matr[i][ind] = Integer.MAX_VALUE;
+									flag = true;
+								}
+							}
+							ind++;
+							if (ind == n)
+							{
+								Matr[i][j] = Integer.MAX_VALUE;
+								flag = true;
+							}
+						}
+					}
+				}
+				if (flag)
+				{
+					break;
+				}
+			}
+			// We don`t need this zeros array anymore.
+			aZero = null;
+		}
+
+		return (L);
+	}
+
+	public static void print(int[][] Matr, int n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (Matr[i][j] == Integer.MAX_VALUE)
+				{
+					System.out.printf("%4c", '_');
+					continue;
+				}
+				System.out.printf("%4d", Matr[i][j]);
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+	}
+}
