@@ -60,14 +60,14 @@ public class Task1Main {
 		// TODO
 		System.out.printf("\n---------------TEST: dict.remove");
 		System.out.printf("\n--------Description: remove Alice");
-		dict.remove(alice.getCardNumber()); // Alice
+		dict.remove(87456123); // Alice
 		System.out.println("");
 		System.out.println("\nCHANGED DICTIONARY:");
 		System.out.printf("CardNumber|   Name   |    Surname    |   Sex    |Study Year|   City    |\n");
 		dict.printDictionary();
 		
 		System.out.printf("\n--------Description: remove root");
-		dict.remove(123456780); // Sasha
+		dict.remove(12345678); // Sasha
 		System.out.println("");
 		System.out.println("\nCHANGED DICTIONARY:");
 		System.out.printf("CardNumber|   Name   |    Surname    |   Sex    |Study Year|   City    |\n");
@@ -75,13 +75,6 @@ public class Task1Main {
 		
 		System.out.printf("\n--------Description: remove Natasha");
 		dict.remove(54123698); // Natasha
-		System.out.println("");
-		System.out.println("\nCHANGED DICTIONARY:");
-		System.out.printf("CardNumber|   Name   |    Surname    |   Sex    |Study Year|   City    |\n");
-		dict.printDictionary();
-		
-		System.out.printf("\n--------Description: remove root whit two childrens");
-		dict.remove(87564128); // Gosha
 		System.out.println("");
 		System.out.println("\nCHANGED DICTIONARY:");
 		System.out.printf("CardNumber|   Name   |    Surname    |   Sex    |Study Year|   City    |\n");

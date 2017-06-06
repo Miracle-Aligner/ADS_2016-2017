@@ -1,7 +1,5 @@
 package bst;
 
-import bst.BSTree.TreeNode;
-
 /**
  * KPI- FPM - PZKS Course: Algorithms and Data Structures (2) Laboratory work 5
  * 
@@ -51,7 +49,7 @@ public interface StudentDictionary<E extends Student> {
 	 * @return the previous student associated with cardNumber, or null if there
 	 *         was no mapping for key
 	 */
-	E put(E e);
+	E put(E s);
 
 	/**
 	 * Returns the student to which the specified cardNumber is mapped, or null
@@ -72,7 +70,7 @@ public interface StudentDictionary<E extends Student> {
 	 * @return previous student associated with cardNumber, or null if there was
 	 *         no mapping for cardNumber
 	 */
-	E remove(int num);
+	E remove(int cardNumber);
 
 	/**
 	 * Outputs the dictionary in table form according to given way of traversal

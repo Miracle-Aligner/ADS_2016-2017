@@ -1,0 +1,701 @@
+package bst;
+import java.util.List;
+import java.util.LinkedList;
+
+/**
+ * KPI- FPM - PZKS Course: Algorithms and Data Structures (2) Laboratory work 5
+ * 
+ * @author Olena Khomenko <br>
+ * 
+ *         Binary search tree based implementation StudentDictionary Keeps
+ *         specified information about students
+ * 
+ *         each node contains id (number of student's card) and information
+ *         about student (name, surname etc.)
+ * 
+ *         all search, delete and get operation use unique id as a key
+ * 
+ * @param <E>
+ */
+
+public class BSTree<E extends Student> implements StudentDictionary<E> {
+
+	/**
+	 * root of a tree
+	 */
+	private TreeNode<E> root;
+
+	public BSTree() {
+
+	}
+
+	public BSTree(TreeNode<E> root) {
+		this.root = root;
+	}
+
+	/**
+	 * Returns true if this dictionary (binary search tree) contains an student
+	 * for the specified cardNumber
+	 * 
+	 * @param cardNumber
+	 *            cardNumber whose presence in this tree is to be tested
+	 * @return true if this tree contains an student record for the specified
+	 *         cardNumber
+	 */
+	@Override
+	public boolean containsKey(int cardNumber) {
+		if(cardNumber < 1) 
+			return false;
+		TreeNode<E> cur = this.root;
+		while(cur != null) {
+			if (cardNumber < cur.getKey()) 
+				cur = cur.left;
+			else if(cardNumber > cur.getKey()) 
+				cur = cur.right;
+			else 
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean contains(Student s) {
+		if(s.getCardNumber() < 1) 
+			return false;
+		TreeNode<E> cur = this.root;
+		while(cur != null) {
+			if (s.getCardNumber() < cur.getKey()) 
+				cur = cur.left;
+			else if(s.getCardNumber() > cur.getKey()) 
+				cur = cur.right;
+			else 
+			{
+				if (s.getCourse() == cur.getValue().getCourse() &&
+					s.getSex().equals(cur.getValue().getSex()) &&
+					s.getName().equals(cur.getValue().getName()) &&
+					s.getSurname().equals(cur.getValue().getSurname()) &&
+					s.getCity().equals(cur.getValue().getCity())){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/**
+	 * Returns the number of nodes in this tree.
+	 * 
+	 * @return he number of nodes in this tree
+	 */
+	@Override
+	public int size() {
+		BSTree<E> left = new BSTree <E> (this.root.left);
+		BSTree<E> right = new BSTree <E> (this.root.right);
+		int size = 1;                                     
+		if (right != null) 
+			size += right.size();        
+		if (left != null) 
+			size += left.size();
+		return size;
+	}
+
+	/**
+	 * Returns the student to which the specified cardNumber is associated, or
+	 * null if this tree contains no student for the cardNumber.
+	 * 
+	 * @param cardNumber
+	 *            the cardNumber whose associated student is to be returned
+	 * @return the student with the specified cardNumber, or null if this tree
+	 *         contains no student for the cardNumber or cardNumber is invalid
+	 *         (negative or 0)
+	 */
+	@Override
+	public E get(int cardNumber) {
+		if(cardNumber < 1) 
+			return null;
+		TreeNode<E> cur = this.root;
+		while(cur != null) {
+			if (cardNumber < cur.getKey()) 
+				cur = cur.left;
+			else if(cardNumber > cur.getKey()) 
+				cur = cur.right;
+			else 
+				return cur.st;
+		}
+		return null;
+	}
+	
+	/**
+	 * Remove from a tree all students that satisfy specified criteria
+	 * 
+	 * @param removeCriteria
+	 *            one or more criteria by witch students will be removed from
+	 *            this tree
+	 * @return number of students was be removed
+	 */
+	public int remove(String... removeCriteria) {
+		// 1) find all nodes witch students satisfy specified removeCriteria
+		// save in a list nodes to be removed
+		// 2) call method remove (node) for each node in a list
+		// 3) call size method to check successful removing
+		// 4) return difference between old size and new size
+		return 0;
+	}
+
+	/**
+	 * Returns true if this dictionary contains no key-value mappings
+	 * 
+	 * @return true if this dictionary contains no key-value mappings
+	 */
+	@Override
+	public boolean isEmpty() {
+		return root == null;
+	}
+
+	/**
+	 * Associates the specified student with the specified cardNumber in this
+	 * dictionary. If the dictionary previously contained a mapping for the
+	 * cardNumber, the old student is replaced by the specified student.
+	 * 
+	 * @param s
+	 *            student to be associated with the specified cardNumber
+	 * @return the previous student associated with cardNumber, or null if there
+	 *         was no mapping for key
+	 */
+	public boolean put(E s) {
+           return add(s);
+  }
+	
+	/**
+	 * Outputs dictionary elements in table form
+	 */
+
+	@Override
+	public void printDictionary() {
+		// Invoke private recursive method for traversing a tree. Type of
+		// traversing is defined in your variant
+		// preorder: прямий порядок
+		
+		TreeNode<E> cur = this.root;
+		if (cur != null) {
+		    BSTree<E> left = new BSTree<E>(this.root.left);
+		    BSTree<E> right = new BSTree<E>(this.root.right);
+		    
+			System.out.println(cur.toString());
+		    left.printDictionary();
+		    right.printDictionary();
+		}
+		
+	}
+	
+	/**
+     * attempts to delete a node from the tree
+     * 
+     * @param n node to delete
+     * @return true if node is deleted, otherwise false
+     */
+    public boolean remove(TreeNode<E> n)
+    {
+        //null guard
+        if (n == null || n.getValue() == null)
+        {
+            return false;
+        }
+
+        return remove( n.getValue() );
+    }
+
+    /**
+     * attempts to delete a node from the tree containing the value
+     * 
+     * @param val value of node to delete
+     * @return true if node is deleted, otherwise false
+     */
+    public boolean remove(final E val)
+    {
+        //the node to be deleted
+    	TreeNode<E> target = null;
+        //to keep track of parent node
+        TreeNode<E> parent = null;
+        //variable node reference
+        TreeNode<E> node = root;
+        System.out.printf("\nRoot name: %s\n", root.getValue().getName());
+    	System.out.printf("Node name: %s\n", node.parent.getValue().getName());
+        while (node != null)
+        {
+            if (val.getkey() == node.getValue().getkey())  //eureka!
+            {
+                target = node;
+                break;
+            }
+            else if (val.getkey() > node.getValue().getkey())  //target greater, so go right
+            {
+                parent = node;
+                node = node.getRight();
+            }
+            else    //target less, so go left
+            {
+                parent = node;
+                node = node.getLeft();
+            }
+        }
+
+        if (target == null)
+        {
+            //target not found
+            return false;
+        }
+        boolean isLeft;
+        if (parent != null)
+        	isLeft = (target == parent.getLeft());
+        else 
+        	isLeft = false;
+        
+        if (target == root) //the node that's baleeting is in fact the root node
+        {
+            //get last house on the left on the right!
+            //it becomes the new root
+            node = getLastHouseOnTheLeft(root.getRight());
+            if (node != null)
+            {
+            	System.out.printf("\nRoot name: %s\n", root.getValue().getName());
+            	System.out.printf("Node name: %s\n", node.getValue().getName());
+                node.setLeft( parent.getLeft() );
+                node.setRight( parent.getRight() );
+                root = node;
+            }
+        }
+        else if ( target.isLeaf() )
+        {
+            if (isLeft)
+            {
+                parent.setLeft(null);
+            }
+            else
+            {
+                parent.setRight(null);
+            }
+        }
+        else if (target.getLeft() != null && target.getRight() != null) //two children, some shuffling
+        {
+            if (isLeft)
+            {
+                parent.setLeft( target.getRight() );
+                parent.getLeft().setLeft( target.getLeft() );
+            }
+            else
+            {
+                parent.setRight( target.getRight() );
+                parent.getRight().setLeft( target.getLeft() );
+            }
+        }
+        else    //one child is simpler
+        {
+            if (target.getLeft() == null)
+            {
+                if (isLeft)
+                {
+                    parent.setLeft( target.getLeft() );
+                }
+                else
+                {
+                    parent.setRight( target.getLeft() );
+                }
+            }
+            else
+            {
+                if (isLeft)
+                {
+                    parent.setLeft( target.getRight() );
+                }
+                else
+                {
+                    parent.setRight( target.getRight() );
+                }
+            }
+        }
+
+        return true;    //baleeted
+    }
+
+    /**
+     * extract the last house on the left
+     * 
+     * @param start the node to start on
+     * @return the last house on the left
+     */
+    private TreeNode<E> getLastHouseOnTheLeft(final TreeNode<E> start)
+    {
+    	TreeNode<E> candidate = null;
+        TreeNode<E> parent = null;
+        TreeNode<E> node = start;
+
+        while (node != null)
+        {
+            if ( node.getLeft() != null )
+            {
+                parent = node;
+                candidate = node.getLeft();
+            }
+
+            node = node.getLeft();
+        }
+
+        if (parent != null)
+        {
+            parent.setLeft(null);
+        }
+
+        return candidate;
+    }
+
+    /**
+     * get a node from the value it's associated with
+     * 
+     * @param v value as a key to finding the node containing it
+     * @return node associated with the value
+     */
+    public TreeNode<E> getNode(E v)
+    {
+        //null guard
+        if (v == null)
+        {
+            return null;
+        }
+
+        TreeNode<E> node = root;
+        while (root != null)
+        {
+            if (node.getValue().getkey() == v.getkey())
+            {
+                return node;
+            }
+            if (node.getValue().getkey() > v.getkey())
+            {
+                node = node.getLeft();
+            }
+            else
+            {
+                node = node.getRight();
+            }
+        }
+
+        return node;
+    }
+	
+	public void removeByCriterion(int course, String sex, String city) {
+		List<TreeNode<E>> list = new LinkedList<>();
+		findNodesToDel (course, sex, city, list);
+		int listSize = list.size();
+		for (int i = 0; i < listSize; i++){
+			System.out.printf("\nNumber: %s\n", list.get(i).getKey());
+			this.remove(list.get(i));
+			// this.remove(list.get(listSize - i - 1));
+			this.printDictionary();
+			System.out.println(" ");
+		}
+//		StudentDictionary<Student> newTree = new BSTree<>();
+//		StudentDictionary<Student> newNewTree = new BSTree<>();
+//		newNewTree = this.rewrTree(newTree, list);
+//		this.root = newNewTree.root;
+	}
+	
+//	public StudentDictionary<Student> rewrTree(StudentDictionary<Student> newTree, List<TreeNode<E>> list) {
+//		TreeNode<E> cur = this.root;
+//		if (cur != null) {
+//		    BSTree<E> left = new BSTree<E>(this.root.left);
+//		    BSTree<E> right = new BSTree<E>(this.root.right);
+//		    if (!list.contains(cur))
+//		    {
+//		    	newTree.put(cur.st);
+//		    }
+//		    left.rewrTree(newTree, list);
+//		    right.rewrTree(newTree, list);
+//		}
+//		return newTree;
+//	}
+	public boolean remove (int num){
+		TreeNode<E> cur = this.root;
+		if (cur != null) {
+		    BSTree<E> left = new BSTree<E>(this.root.left);
+		    BSTree<E> right = new BSTree<E>(this.root.right);
+	    	if (cur.st.getkey() == num)
+		    {
+	    		return remove (cur);
+		    }
+		    left.remove (num);
+		    right.remove (num);
+		}
+		return false;
+	}
+	public void findNodesToDel (int course, 
+								String sex, 
+								String city, 
+								List<TreeNode<E>> list) {
+		
+		TreeNode<E> cur = this.root;
+		if (cur != null) {
+		    BSTree<E> left = new BSTree<E>(this.root.left);
+		    BSTree<E> right = new BSTree<E>(this.root.right);
+		    if (cur.st.getSex().equalsIgnoreCase(sex))
+		    {
+		    	if (cur.st.getCourse() == course)
+			    {
+		    		if (cur.st.getCity().equalsIgnoreCase(city))
+				    {
+				    	list.add(cur);
+				    }
+			    }
+		    }
+		    left.findNodesToDel (course, sex, city, list);
+		    right.findNodesToDel (course, sex, city, list);
+		}
+		
+	}
+	public boolean add(final TreeNode<E> n)
+    {
+        //null guard
+        if (n == null || n.getValue() == null)
+        {
+            return false;
+        }
+
+        boolean isSuccessful;
+        if (root == null)
+        {
+            root = n;
+            isSuccessful = true;
+        }
+        else
+        {
+            isSuccessful = findHome(root, n);
+        }
+
+        return isSuccessful;
+    }
+	
+	private boolean findHome(TreeNode<E> adoptor, final TreeNode<E> adoptee)
+    {
+        if (adoptor.getValue().getkey() > adoptee.getValue().getkey())   //adoptor comps greater than adoptee, so go left
+        {
+            if (adoptor.getLeft() == null)
+            {
+                adoptor.setLeft(adoptee);
+                return true;
+            }
+            //recurse until we find somewhere to place the adoptee node
+            return findHome(adoptor.getLeft(), adoptee);
+        }
+        else if (adoptor.getValue().getkey() < adoptee.getValue().getkey())  //adoptor comps less than adoptee, so go right
+        {
+            if (adoptor.getRight() == null)
+            {
+                adoptor.setRight(adoptee);
+                return true;
+            }
+            //recurse until we find somewhere to place the adoptee node
+            return findHome(adoptor.getRight(), adoptee);
+        }
+        else
+        {
+        	adoptor.st = adoptee.st;
+        }
+
+        return false;
+    }
+	public boolean add(final E val)
+    {
+        return add(new TreeNode<E>(val) );
+    }
+	
+	@SuppressWarnings("hiding")
+	class TreeNode <E extends Student> {
+		/**
+		 * information about student. Instance of class Student
+		 */
+		private E st;
+
+		/**
+		 * reference to the right node
+		 */
+		private TreeNode<E> right;
+
+		/**
+		 * reference to the left node
+		 */
+		private TreeNode<E> left;
+		/**
+		 * reference to the parent node
+		 */
+
+		private TreeNode<E> parent;
+		/**
+	     * construct a Node with value
+	     *
+	     * @param val value for this node
+	     */
+
+	    /**
+	     * copy constructor
+	     * 
+	     * @param n node to copy from
+	     */
+	    public TreeNode(TreeNode<E> n)
+	    {
+	        st = n.st;
+	        left = n.left;
+	        right = n.right;
+	        parent = null;
+	    }
+
+	    /**
+	     * @return true if this node has no children
+	     */
+	    public boolean isLeaf()
+	    {
+	        return (left == null && right == null);
+	    }
+
+	    public TreeNode<E> getLeft() { return left; }
+	    public TreeNode<E> getRight() { return right; }
+	    public void setLeft(TreeNode<E> n) {left = n; }
+	    public void setRight(TreeNode<E> n) {right = n; }
+	    public void setValue(E v) { st = v; }
+
+		public TreeNode(E e) {
+			this.st = e;
+			this.right = null;
+			this.left = null;
+			this.parent = null;
+		}
+
+		public TreeNode(E s, TreeNode<E> parent) {
+			this.st = s;
+			this.right = null;
+			this.left = null;
+			this.parent = parent;
+
+		}
+		
+		@Override
+		public TreeNode <E> clone(){
+			try{
+				return (TreeNode<E>)super.clone();
+			}
+			catch(CloneNotSupportedException ex){
+				throw new InternalError();
+			}
+		}
+		
+		
+
+	    /**
+	     * create a node containing input value and add it to the tree
+	     * 
+	     * @param val value for new node
+	     * @return true if add is successful
+	     */
+	    
+
+		public int getKey() {
+			return st.getkey();
+		}
+
+		public E getValue() {
+			return st;
+
+		}
+		public TreeNode<E> getMinimum() {
+			TreeNode<E> cur = this;
+			while (cur.left != null) {
+				cur = this.left;
+			}
+			return cur;
+		}
+		
+		public TreeNode<E> getMaximum() {
+			TreeNode<E> cur = this;
+			while (cur.right != null) {
+				cur = this.right;
+			}
+			return cur;
+		}
+
+		@Override
+		public String toString() {
+			return st.toString();
+		}
+		public E remove(int cardNumber, TreeNode<E> parent) {
+			
+			if (cardNumber < this.getKey()) 
+			{
+				if (left != null)
+					return left.remove(cardNumber, this);
+				else
+					return null;
+			} 
+			else if (cardNumber > this.getKey()) 
+			{
+				if (right != null)
+					return right.remove(cardNumber, this);
+				else
+					return null;
+			} 
+			else 
+			{
+				E tmp = this.st;
+				if (left != null && right != null) 
+				{
+					this.st = right.getMinimum().getValue();
+					right.remove(this.getKey(), this.parent);
+				} 
+				else if (parent.left == this) 
+				{
+					if (left != null)
+						parent.left = left;
+					else
+						parent.left = right;
+				} 
+				else if (parent.right == this) 
+				{
+					if (left != null)
+						parent.right = left;
+					else
+						parent.right = right;
+				}
+				return tmp;
+			}
+		}
+		
+		public E remove() {
+			E tmp = this.st;
+			if (left != null && right != null) 
+			{
+				TreeNode <E> min = right.getMinimum();
+				this.st = min.st;
+				min.remove();
+			} 
+			else if (parent.left == this) 
+			{
+				
+				if (left != null){
+					parent.left = left;
+				}
+				else{
+					parent.left = right;
+				}
+					
+			} 
+			else if (parent.right == this) 
+			{
+				if (left != null){
+					parent.right = left;
+				}
+					
+				else{
+					parent.right = right;
+				}
+					
+			}
+			return tmp;
+		}
+	}
+}

@@ -13,7 +13,7 @@ import java.util.LinkedList;
  *         each node contains id (number of student's card) and information
  *         about student (name, surname etc.)
  * 
- *         all search, delete and get operation use unique id as a key
+ *         all search, remove and get operation use unique id as a key
  * 
  * @param <E>
  */
@@ -176,7 +176,7 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 	public void printDictionary() {
 		// Invoke private recursive method for traversing a tree. Type of
 		// traversing is defined in your variant
-		// preorder: прямий порядок
+		// preorder: ГЇГ°ГїГ¬ГЁГ© ГЇГ®Г°ГїГ¤Г®ГЄ
 		
 		TreeNode<E> cur = this.root;
 		if (cur != null) {
@@ -201,58 +201,70 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 	@Override
 	public E remove(int cardNumber) {
 		if (this.containsKey(cardNumber)) {
-			if (root == null)
-				return null;
-			else {
-				if (root.getKey() == cardNumber) {
-					TreeNode<E> nullNode = new TreeNode<E>(null);
-					nullNode.left = root;
-					E result = root.remove(cardNumber, nullNode);
-					root = nullNode.left;
-					return result;
-				} else {
-					return root.remove(cardNumber, null);
-				}
-			}
+			TreeNode <E> toDel= findNodeByKey(cardNumber);
+			remove(toDel);
 		}
 		return null;
 	}
 	
-	public E remove(TreeNode<E> node) {
-			return node.remove();
+	TreeNode <E> findNodeByKey(int key){
+		TreeNode<E> cur = this.root;
+		TreeNode<E> found = null;
+		if (cur != null) {
+		    BSTree<E> left = new BSTree<E>(this.root.left);
+		    BSTree<E> right = new BSTree<E>(this.root.right);
+	    	if (cur.st.getCardNumber() == key)
+		    {
+	    		return cur;
+		    }
+	    	found = left.findNodeByKey (key);
+	    	found = right.findNodeByKey (key);
+		}
+		return found;
 	}
-	
 	public void removeByCriterion(int course, String sex, String city) {
 		List<TreeNode<E>> list = new LinkedList<>();
 		findNodesToDel (course, sex, city, list);
 		int listSize = list.size();
 		for (int i = 0; i < listSize; i++){
-			System.out.printf("\nNumber: %s\n", list.get(i).getKey());
-			this.remove(list.get(i).getKey());
-			// this.remove(list.get(listSize - i - 1));
+			System.out.printf("Deleted cardnumber: %s\n", list.get(i).getKey());
+			this.remove(list.get(i));
 			this.printDictionary();
 			System.out.println(" ");
 		}
-//		StudentDictionary<Student> newTree = new BSTree<>();
-//		StudentDictionary<Student> newNewTree = new BSTree<>();
-//		newNewTree = this.rewrTree(newTree, list);
-//		this.root = newNewTree.root;
 	}
 	
-//	public StudentDictionary<Student> rewrTree(StudentDictionary<Student> newTree, List<TreeNode<E>> list) {
-//		TreeNode<E> cur = this.root;
-//		if (cur != null) {
-//		    BSTree<E> left = new BSTree<E>(this.root.left);
-//		    BSTree<E> right = new BSTree<E>(this.root.right);
-//		    if (!list.contains(cur))
-//		    {
-//		    	newTree.put(cur.st);
-//		    }
-//		    left.rewrTree(newTree, list);
-//		    right.rewrTree(newTree, list);
-//		}
-//		return newTree;
-//	}
+    void remove(TreeNode <E> soughtValue) {
+        root = removeNode(root, soughtValue);
+    }
+
+    TreeNode<E> removeNode(TreeNode <E> node, TreeNode <E> soughtValue) {
+        if (node == null) {
+            return null;
+        }
+        if (node.getKey() > soughtValue.getKey()) {
+            node.left = removeNode(node.left, soughtValue);
+        } else if (node.getKey() < soughtValue.getKey()) {
+            node.right = removeNode(node.right, soughtValue);
+        } else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            } else {
+                // Two subtrees remain, do for instance:
+                // Return left, with its greatest element getting
+                // the right subtree.
+            	TreeNode <E> leftsRightmost = node.left;
+                while (leftsRightmost.right != null) {
+                    leftsRightmost = leftsRightmost.right;
+                }
+                leftsRightmost.right = node.right;
+                return node.left;
+            }
+        }
+        return node;
+    }
 	
 	public void findNodesToDel (int course, 
 								String sex, 
@@ -383,80 +395,6 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 		@Override
 		public String toString() {
 			return st.toString();
-		}
-		public E remove(int cardNumber, TreeNode<E> parent) {
-			
-			if (cardNumber < this.getKey()) 
-			{
-				if (left != null)
-					return left.remove(cardNumber, this);
-				else
-					return null;
-			} 
-			else if (cardNumber > this.getKey()) 
-			{
-				if (right != null)
-					return right.remove(cardNumber, this);
-				else
-					return null;
-			} 
-			else 
-			{
-				E tmp = this.st;
-				if (left != null && right != null) 
-				{
-					this.st = right.getMinimum().getValue();
-					right.remove(this.getKey(), this.parent);
-				} 
-				else if (parent.left == this) 
-				{
-					if (left != null)
-						parent.left = left;
-					else
-						parent.left = right;
-				} 
-				else if (parent.right == this) 
-				{
-					if (left != null)
-						parent.right = left;
-					else
-						parent.right = right;
-				}
-				return tmp;
-			}
-		}
-		
-		public E remove() {
-			E tmp = this.st;
-			if (left != null && right != null) 
-			{
-				TreeNode <E> min = right.getMinimum();
-				this.st = min.st;
-				min.remove();
-			} 
-			else if (parent.left == this) 
-			{
-				
-				if (left != null){
-					parent.left = left;
-				}
-				else{
-					parent.left = right;
-				}
-					
-			} 
-			else if (parent.right == this) 
-			{
-				if (left != null){
-					parent.right = left;
-				}
-					
-				else{
-					parent.right = right;
-				}
-					
-			}
-			return tmp;
 		}
 	}
 }
