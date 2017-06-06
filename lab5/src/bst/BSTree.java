@@ -122,43 +122,6 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 		}
 		return null;
 	}
-
-	/**
-	 * Removes the student for this cardNumber from this tree if present.
-	 * 
-	 * @param cardNumber
-	 *            cardNumber for which student should be removed
-	 * @return the previous student associated with cardNumber, or null if there
-	 *         was no student for cardNumber.
-	 */
-	public void removeByCriterion(int course, String sex, String city) {
-		List<TreeNode<E>> list = new LinkedList<>();
-		findNodesToDel (course, sex, city, list);
-		int listSize = list.size();
-		for (int i = 0; i < listSize; i++){
-			this.remove(list.get(listSize - i - 1).st.getCardNumber());
-		}
-	}
-	
-	@Override
-	public E remove(int cardNumber) {
-		if (this.containsKey(cardNumber)) {
-			if (root == null)
-				return null;
-			else {
-				if (root.getKey() == cardNumber) {
-					TreeNode<E> nullNode = new TreeNode<E>(null);
-					nullNode.left = root;
-					E result = root.remove(cardNumber, nullNode);
-					root = nullNode.left;
-					return result;
-				} else {
-					return root.remove(cardNumber, null);
-				}
-			}
-		}
-		return null;
-	}
 	
 	/**
 	 * Remove from a tree all students that satisfy specified criteria
@@ -227,14 +190,69 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 		
 	}
 	
-	public void removeByCriterio(int course, String sex, String city) {
+	/**
+	 * Removes the student for this cardNumber from this tree if present.
+	 * 
+	 * @param cardNumber
+	 *            cardNumber for which student should be removed
+	 * @return the previous student associated with cardNumber, or null if there
+	 *         was no student for cardNumber.
+	 */
+	@Override
+	public E remove(int cardNumber) {
+		if (this.containsKey(cardNumber)) {
+			if (root == null)
+				return null;
+			else {
+				if (root.getKey() == cardNumber) {
+					TreeNode<E> nullNode = new TreeNode<E>(null);
+					nullNode.left = root;
+					E result = root.remove(cardNumber, nullNode);
+					root = nullNode.left;
+					return result;
+				} else {
+					return root.remove(cardNumber, null);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public E remove(TreeNode<E> node) {
+			return node.remove();
+	}
+	
+	public void removeByCriterion(int course, String sex, String city) {
 		List<TreeNode<E>> list = new LinkedList<>();
 		findNodesToDel (course, sex, city, list);
 		int listSize = list.size();
 		for (int i = 0; i < listSize; i++){
-			this.remove(list.get(i).st.getCardNumber());
+			System.out.printf("\nNumber: %s\n", list.get(i).getKey());
+			this.remove(list.get(i).getKey());
+			// this.remove(list.get(listSize - i - 1));
+			this.printDictionary();
+			System.out.println(" ");
 		}
+//		StudentDictionary<Student> newTree = new BSTree<>();
+//		StudentDictionary<Student> newNewTree = new BSTree<>();
+//		newNewTree = this.rewrTree(newTree, list);
+//		this.root = newNewTree.root;
 	}
+	
+//	public StudentDictionary<Student> rewrTree(StudentDictionary<Student> newTree, List<TreeNode<E>> list) {
+//		TreeNode<E> cur = this.root;
+//		if (cur != null) {
+//		    BSTree<E> left = new BSTree<E>(this.root.left);
+//		    BSTree<E> right = new BSTree<E>(this.root.right);
+//		    if (!list.contains(cur))
+//		    {
+//		    	newTree.put(cur.st);
+//		    }
+//		    left.rewrTree(newTree, list);
+//		    right.rewrTree(newTree, list);
+//		}
+//		return newTree;
+//	}
 	
 	public void findNodesToDel (int course, 
 								String sex, 
@@ -298,6 +316,16 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 
 		}
 		
+		@Override
+		public TreeNode <E> clone(){
+			try{
+				return (TreeNode<E>)super.clone();
+			}
+			catch(CloneNotSupportedException ex){
+				throw new InternalError();
+			}
+		}
+		
 		public E add(E s) {
             if (s.getkey() == this.getKey()) 
             {
@@ -309,7 +337,7 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
             {
                   if (left == null) 
                   {
-                        left = new TreeNode<E>(s);
+                        left = new TreeNode<E>(s, this);
                         return null;
                   } 
                   else
@@ -319,7 +347,7 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
             {
                   if (right == null) 
                   {
-                        right = new TreeNode<E>(s);
+                        right = new TreeNode<E>(s, this);
                         return null;
                   } 
                   else
@@ -341,7 +369,6 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 			while (cur.left != null) {
 				cur = this.left;
 			}
-			// MAYBE cur.left????
 			return cur;
 		}
 		
@@ -379,7 +406,7 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 				if (left != null && right != null) 
 				{
 					this.st = right.getMinimum().getValue();
-					right.remove(this.getKey(), this);
+					right.remove(this.getKey(), this.parent);
 				} 
 				else if (parent.left == this) 
 				{
@@ -398,7 +425,38 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
 				return tmp;
 			}
 		}
-
+		
+		public E remove() {
+			E tmp = this.st;
+			if (left != null && right != null) 
+			{
+				TreeNode <E> min = right.getMinimum();
+				this.st = min.st;
+				min.remove();
+			} 
+			else if (parent.left == this) 
+			{
+				
+				if (left != null){
+					parent.left = left;
+				}
+				else{
+					parent.left = right;
+				}
+					
+			} 
+			else if (parent.right == this) 
+			{
+				if (left != null){
+					parent.right = left;
+				}
+					
+				else{
+					parent.right = right;
+				}
+					
+			}
+			return tmp;
+		}
 	}
-
 }
