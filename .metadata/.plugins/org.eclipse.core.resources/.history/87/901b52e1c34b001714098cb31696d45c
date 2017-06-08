@@ -1,0 +1,173 @@
+package lab6.array_linked_lists;
+import lab6.Student;
+
+/**
+ * KPI- FPM - PZKS Course: Algorithms and Data Structures (2) Laboratory work 6
+ * 
+ * @author Olena Khomenko <br>
+ * 
+ *         Resizable-array. Implements List interface <br>
+ *         This class skeleton contains methods with TODO <br>
+ *         Implement methods with TODO and write addition methods to support
+ *         class functionality.
+ * 
+ *         Methods isEmpty, get, set operations run in constant time. <br>
+ *         The add operation runs in amortized constant time. <br>
+ *         All of the other operations run in linear time (roughly speaking).
+ */
+
+public class StudentArrayList implements StudentList {
+	// The array buffer into which the elements of the ArrayList are stored. The
+	// capacity of the ArrayList is the length of this array buffer
+
+	private Student[] list;
+
+	// Default initial capacity
+	private final int defaultCapacity = 10;
+
+	// the size of the array used to store the elements in the list
+	private int capacity;
+
+	// The size of the ArrayList (the number of elements it contains)
+	private int size;
+
+	/**
+	 * Constructs an empty list with an initial capacity of ten
+	 * 
+	 */
+	public StudentArrayList() {
+		this.capacity = defaultCapacity;
+		this.list = new Student[defaultCapacity];
+		this.size = 0;
+		this.capacity = defaultCapacity;
+	}
+
+	/**
+	 * Constructs an empty list with the specified initial capacity
+	 * 
+	 * @param initialCapacity
+	 *            the initial capacity of the list
+	 */
+	public StudentArrayList(int initialCapacity) {
+		this.capacity = initialCapacity;
+		this.list = new Student[initialCapacity];
+		this.size = 0;
+		this.capacity = initialCapacity;
+	}
+
+	public boolean add(Student element) {
+		if (size == capacity)
+        	resize(capacity * 2);
+        list[size] = element;
+        size++;
+		return true;
+	}
+	
+	private void resize (int capacity) {
+        assert capacity >= size;
+        Student[] temp = new Student [capacity];
+        for (int i = 0; i < size(); i++) 
+        {
+            temp[i] = list[i];
+        }
+        list = temp;
+        this.capacity = capacity;
+    }
+
+	public boolean add(int index, Student e) {
+		
+		if (size == capacity)
+        	resize(capacity * 2);
+		
+		if (index >= size)
+		{
+			list[index] = e;
+		}
+		else
+		{
+			for (int i = size; i > index; i--)
+			{
+				list[i] = list[i - 1];
+			}
+			list[index] = e;
+		}
+		size++;
+
+		return true;
+
+	}
+
+	public Student remove(int index) {
+		if (index >= size)
+        {
+        	System.out.printf ("Remove error: index out of bounds.");
+        	return null;
+        }
+		Student tmp = list[size-1];
+		list[size-1] = list[index];
+		list[index] = tmp;
+		size--;
+		
+        if (size > 0 && size == capacity / 4) 
+        	resize (capacity / 2); 
+        return list[size];
+	}
+
+	public boolean remove(Student element) {
+		int i = 0;
+		while (i < size)
+		{
+			if (element.equals(list[i]))
+			{
+				for (int j = i; j < size - 1; j++)
+					list[j] = list[j+1];
+				size--;
+				return true;
+			}
+			i++;
+		}
+
+		return false;
+	}
+
+	public Student get(int index) {
+		if (index >= size)
+        {
+        	System.out.printf ("Remove error: index out of bounds.");
+        	return null;
+        }
+
+		return list[index];
+	}
+
+	public Student set(int index, Student element) {
+		if (index >= capacity)
+        {
+        	System.out.printf ("Remove error: index out of bounds.");
+        	return null;
+        }
+		Student del;
+		if (index < size)
+		{
+			del = list[index];
+			list[index] = element;
+			return del;
+		}
+		else
+		{
+			list[index] = element;
+		}
+		
+		return null;
+	}
+
+	public int size() {
+		return size;
+	}
+
+	public boolean isEmpty() {
+
+		return size == 0;
+	}
+
+}

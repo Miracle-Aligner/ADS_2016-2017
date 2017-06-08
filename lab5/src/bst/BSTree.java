@@ -1,5 +1,8 @@
 package bst;
 import java.util.List;
+
+import lab6.Student;
+
 import java.util.LinkedList;
 
 /**
@@ -252,9 +255,6 @@ public class BSTree<E extends Student> implements StudentDictionary<E> {
             } else if (node.right == null) {
                 return node.left;
             } else {
-                // Two subtrees remain, do for instance:
-                // Return left, with its greatest element getting
-                // the right subtree.
             	TreeNode <E> leftsRightmost = node.left;
                 while (leftsRightmost.right != null) {
                     leftsRightmost = leftsRightmost.right;

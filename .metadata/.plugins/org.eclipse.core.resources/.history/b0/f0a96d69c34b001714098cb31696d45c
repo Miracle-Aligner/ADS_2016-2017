@@ -1,0 +1,75 @@
+package lab6.max_priority_queue;
+
+import lab6.MaxPriorityQueue;
+import lab6.Student;
+import lab6.StudentComparator;
+import lab6.array_linked_lists.StudentArrayList;
+
+/**
+ * KPI- FPM - PZKS Course: Algorithms and Data Structures (2) Laboratory work 6
+ * 
+ * @author Olena Khomenko
+ * 
+ *         Array implementation of max-priority queue. <br>
+ *         Keeps elements of type Student.<br>
+ *         Elements in list are not ordered. To find max-priority element in a
+ *         priority queue compare priorities of elements.<br>
+ *         Use StudentComparator to compare priorities of Students
+ */
+
+public class UnsortedArrayPriorityQueue implements MaxPriorityQueue {
+	private StudentArrayList array;
+	private StudentComparator c;
+
+	public UnsortedArrayPriorityQueue(StudentComparator c) {
+		this.c = c;
+		array = new StudentArrayList();
+	}
+
+	@Override
+	public void insert(Student s) {
+		// add s to the list
+		array.add(s);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return array.isEmpty();
+	}
+
+	@Override
+	public Student removeMax() {
+		// TODO
+		// finds, removes and returns from array the student with the biggest
+		// priority
+		// use StudentComparator to compare priorities of Students
+		// returns null if this queue is empty
+		return null;
+	}
+
+	@Override
+	public Student max() {
+		// TODO
+		// finds, retrieves, but does not remove from list the student with the
+		// biggest priority
+		// use StudentComparator to compare priorities of Students
+		// returns null if this queue is empty
+		if (array.isEmpty())
+			return null;
+		Student max = array.get(0);
+		for (int i = 1; i < array.size(); i++)
+		{
+			if (c.compare(max, array.get(i)) < 0)
+			{
+				max = array.get(i);
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public int size() {
+		return array.size();
+	}
+
+}

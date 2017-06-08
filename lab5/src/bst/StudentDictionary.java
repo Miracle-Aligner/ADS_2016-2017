@@ -1,5 +1,7 @@
 package bst;
 
+import lab6.Student;
+
 /**
  * KPI- FPM - PZKS Course: Algorithms and Data Structures (2) Laboratory work 5
  * 

@@ -1,0 +1,19 @@
+package lab_6;
+
+import java.util.Comparator;
+
+public class StudentComparator implements Comparator<Student> {
+
+	@Override
+	public int compare(Student s1, Student s2) {
+
+		// TODO
+		// implement comprising priorities of s1 and s2
+		// use fields according your variant
+
+		// as example, compare card number
+		return Integer.compare(s1.getkey(), s2.getkey());
+
+	}
+
+}

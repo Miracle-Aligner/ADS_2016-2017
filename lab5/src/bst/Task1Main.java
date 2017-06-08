@@ -2,6 +2,9 @@ package bst;
 
 import java.util.List;
 
+import lab6.Student;
+import lab6.StudentReader;
+
 public class Task1Main {
 	// name of file which stores data about students
 	private static String fileName = "students.csv";

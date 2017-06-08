@@ -1,0 +1,47 @@
+package lab6;
+
+import java.util.Comparator;
+
+public class StudentComparator implements Comparator<Student> {
+
+	@Override
+	public int compare(Student s1, Student s2) {
+
+		// TODO
+		// implement comprising priorities of s1 and s2
+		// use fields according your variant
+		int s1Priority = 0;
+		int s2Priority = 0;
+
+		boolean city1Priority = s1.getCity().equals("Kyiv");
+		boolean city2Priority = s2.getCity().equals("Kyiv");
+
+		if (city1Priority && city2Priority == false)
+			s1Priority += 10;
+		else if (city1Priority == false && city2Priority)
+			s2Priority += 10;
+
+		int course1Coef = Integer.compare(s1.getkey(), 5);
+		int course2Coef = Integer.compare(s2.getkey(), 5);
+		
+		int coursesCmp = Integer.compare(Math.abs(course1Coef), Math.abs(course2Coef));
+		
+		if (coursesCmp > 0) // means that first student has less priority 
+			s1Priority -= course1Coef;
+		else if (coursesCmp < 0) // means that second student has less priority 
+			s2Priority -= course2Coef;
+		
+		System.out.printf(s1.toString());
+		System.out.printf(s2.toString());
+		if (Integer.compare(s1Priority, s2Priority) > 0)
+		{
+			System.out.printf("s1 has priority.\n");
+		}
+		else 
+		{
+			System.out.printf("s2 has priority.\n");
+		}
+		return Integer.compare(s1Priority, s2Priority);
+	}
+
+}
